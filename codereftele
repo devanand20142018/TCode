@@ -8,6 +8,44 @@ When a user presses an inline keyboard button, Telegram sends a callback query t
 
 ==================================
 
+import telebot
+import openai
+
+# Replace 'YOUR_TELEGRAM_API_TOKEN' with your Telegram bot token.
+bot = telebot.TeleBot('YOUR_TELEGRAM_API_TOKEN')
+
+# Replace 'YOUR_OPENAI_SECRET_KEY' with your OpenAI secret key.
+openai.api_key = 'YOUR_OPENAI_SECRET_KEY'
+
+@bot.message_handler(commands=['start'])
+def handle_start(message):
+    bot.send_message(message.chat.id, "Hello! I'm your AI assistant. Send me a message, and I'll respond.")
+
+@bot.message_handler(func=lambda message: True)
+def handle_message(message):
+    user_input = message.text
+
+    # Use the OpenAI API to generate a response.
+    response = openai.Completion.create(
+        engine="text-davinci-002",  # Replace with the appropriate engine for GPT-3.
+        prompt=user_input,
+        max_tokens=100,
+        temperature=0.7
+    )
+
+    # Extract the generated response from the API response.
+    generated_response = response['choices'][0]['text']
+
+    # Send the generated response back to the user as a reply.
+    bot.reply_to(message, generated_response)
+
+bot.polling()
+
+
+
+--_-----------+
+
+
 
 
 The parameters chat_id and message_id serve different purposes in the context of the pyTelegramBotAPI when dealing with callback queries.
