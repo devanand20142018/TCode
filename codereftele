@@ -107,3 +107,47 @@ def handle_text(message):
 
     # Send the NLP response back to the user
     bot.reply_to(message, nlp_response)
+
+
+
+
+-+++++++++++++++++++++++++++++((+++!!!!!!!(++++++++
+
+
+
+import telebot
+
+# Replace 'YOUR_TELEGRAM_API_TOKEN' with your actual Telegram bot token.
+bot = telebot.TeleBot('YOUR_TELEGRAM_API_TOKEN')
+
+@bot.message_handler(commands=['start'])
+def handle_start(message):
+    # Send a welcome message with an inline button to clear the chat.
+    keyboard = telebot.types.InlineKeyboardMarkup()
+    clear_button = telebot.types.InlineKeyboardButton(text='Clear Chat', callback_data='clear')
+    keyboard.add(clear_button)
+    bot.send_message(message.chat.id, "Hello! I'm your AI assistant. Send me a message, and I'll respond.", reply_markup=keyboard)
+
+@bot.callback_query_handler(func=lambda call: call.data == 'clear')
+def handle_clear_callback(callback_query):
+    # Send multiple blank messages to simulate clearing the chat history.
+    for _ in range(5):
+        bot.send_message(callback_query.message.chat.id, " ")
+
+    # Send a message to inform the user that the chat has been cleared.
+    bot.send_message(callback_query.message.chat.id, "Chat cleared. Starting from the beginning.")
+
+    # After clearing the chat, send the welcome message again to start the conversation.
+    handle_start(callback_query.message)
+
+@bot.message_handler(func=lambda message: True)
+def handle_message(message):
+    # Your existing message handling logic here.
+    # This function will handle user messages other than /start and inline button callbacks.
+    # You can use OpenAI or other models to generate responses.
+
+bot.polling()
+
+
+
+
